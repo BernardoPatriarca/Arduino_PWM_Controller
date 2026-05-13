@@ -80,23 +80,22 @@ O código completo está disponível em `/src/main.cpp`.
 #include <Arduino.h>
 
 void setup() {
-  // Nenhuma configuração necessária para analogWrite
 }
 
 void loop() {
-  analogWrite(7, 64);    // 25% duty cycle - velocidade baixa
+  analogWrite(7, 64);
   delay(1000);
 
-  analogWrite(7, 127);   // 50% duty cycle - velocidade média
+  analogWrite(7, 127);
   delay(1000);
 
-  analogWrite(7, 191);   // 75% duty cycle - velocidade alta
+  analogWrite(7, 191);
   delay(1000);
 
-  analogWrite(7, 255);   // 100% duty cycle - velocidade máxima
+  analogWrite(7, 255);
   delay(1000);
 
-  analogWrite(7, 0);     // 0% duty cycle - motor parado
+  analogWrite(7, 0);
   delay(1000);
 }
 ```
@@ -106,24 +105,31 @@ void loop() {
 ```cpp
 #include <Arduino.h>
 
-const int pinoMotor = 7;   // Pino PWM do motor
-const int pinoBotao = 4;   // Pino do botão
+const int pinoBotao = 2;
+const int pinoPWM   = 7;
 
-int velocidade = 0;        // Velocidade inicial
+int velocidade = 0;
+bool ultimoEstadoBotao = LOW;
 
 void setup() {
   pinMode(pinoBotao, INPUT);
+  pinMode(pinoPWM, OUTPUT);
+
+  analogWrite(pinoPWM, 0);
 }
 
 void loop() {
-  if (digitalRead(pinoBotao) == HIGH) {
-    velocidade += 64;       // Incrementa velocidade a cada pressão
+  int leitura = digitalRead(pinoBotao);
+
+  if (leitura == HIGH && ultimoEstadoBotao == LOW) {
+    velocidade += 64; 
+
     if (velocidade > 255) {
-      velocidade = 0;       // Reinicia ao ultrapassar o máximo
+      velocidade = 0;
     }
-    analogWrite(pinoMotor, velocidade);
-    delay(300);             // Debounce do botão
+    analogWrite(pinoPWM, velocidade);
   }
+  ultimoEstadoBotao = leitura;
 }
 ```
 
